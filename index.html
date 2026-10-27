@@ -1,22 +1,118 @@
-services:
-  - type: web
-    name: baghera-one
-    runtime: docker
-    region: frankfurt
-    plan: 0.5c-512mb
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
-    autoDeployTrigger: "off"
-    healthCheckPath: /
-    numInstances: 1
 
-    disk:
-      name: baghera-data
-      mountPath: /app/data
-      sizeGB: 1
-
-    envVars:
-      - key: DATABASE_PATH
-        value: /app/data/baghera.sqlite
-      - key: NEXT_TELEMETRY_DISABLED
-        value: "1"
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baghera One – Know what to do next</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#17243a}
+header{background:#122b50;color:white;padding:24px 7%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.logo{font-size:26px;font-weight:bold}
+select,button{font:inherit;padding:12px;border-radius:9px}
+.hero{text-align:center;padding:65px 20px;background:linear-gradient(135deg,#173b70,#2875a6);color:white}
+.hero h1{font-size:clamp(30px,5vw,48px);margin:0 0 15px}
+.hero p{font-size:19px}
+main{max-width:1100px;margin:auto;padding:35px 20px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+.card{background:white;padding:25px;border-radius:15px;box-shadow:0 4px 18px #152b4512}
+.card h3{margin-top:0}
+button{background:#1768bd;color:white;border:0;cursor:pointer}
+button:hover{background:#104c8c}
+.guide{background:white;margin-top:30px;padding:25px;border-radius:15px}
+.option{display:block;margin:10px 0;text-align:left;width:100%}
+.hidden{display:none}
+footer{text-align:center;padding:30px;color:#65748a}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">Baghera One</div>
+<select id="language" aria-label="Välj språk">
+<option value="sv">Svenska</option>
+<option value="en">English</option>
+</select>
+</header>
+<section class="hero">
+<h1>Know what to do next.</h1>
+<p>Få hjälp att förstå dina nästa steg i Sverige.</p>
+</section>
+<main>
+<h2>Vad behöver du hjälp med?</h2>
+<div class="cards" id="cards"></div>
+<section class="guide hidden" id="guide" aria-live="polite">
+<h2 id="guideTitle"></h2>
+<div id="guideContent"></div>
+<button onclick="resetGuide()">Tillbaka</button>
+</section>
+</main>
+<footer>Baghera One · Information och vägledning, inte myndighetsbeslut.</footer>
+<script>
+const topics=[
+["Arbete och jobbsökande","Hitta nästa steg mot arbete."],
+["A-kassa och arbetslöshet","Förstå vad du behöver kontrollera."],
+["Försäkringskassan","Vägledning kring ersättning och intyg."],
+["Migration och uppehållstillstånd","Hitta relevant myndighetsinformation."],
+["Familj och vardag","Vägledning vid förändringar i livet."]
+];
+const links=[
+"https://arbetsformedlingen.se",
+"https://www.sverigesakassor.se",
+"https://www.forsakringskassan.se",
+"https://www.migrationsverket.se",
+"https://www.1177.se"
+];
+const cards=document.getElementById("cards");
+topics.forEach((topic,i)=>{
+const card=document.createElement("article");
+card.className="card";
+const h=document.createElement("h3");
+h.textContent=topic[0];
+const p=document.createElement("p");
+p.textContent=topic[1];
+const b=document.createElement("button");
+b.textContent="Starta guide";
+b.onclick=()=>startGuide(i);
+card.append(h,p,b);
+cards.append(card);
+});
+function startGuide(i){
+document.getElementById("guide").classList.remove("hidden");
+document.getElementById("guideTitle").textContent=topics[i][0];
+const content=document.getElementById("guideContent");
+content.replaceChildren();
+const p=document.createElement("p");
+p.textContent="Vad vill du börja med?";
+content.append(p);
+["Jag vill förstå mina alternativ","Jag behöver kontakta rätt myndighet"].forEach(choice=>{
+const b=document.createElement("button");
+b.className="option";
+b.textContent=choice;
+b.onclick=()=>{
+content.replaceChildren();
+const info=document.createElement("p");
+info.textContent="Börja med att beskriva din situation och kontrollera vilka regler som gäller för dig hos ansvarig myndighet.";
+const a=document.createElement("a");
+a.href=links[i];
+a.target="_blank";
+a.rel="noopener noreferrer";
+a.textContent="Öppna relevant informationssida";
+content.append(info,a);
+};
+content.append(b);
+});
+document.getElementById("guide").scrollIntoView({behavior:"smooth"});
+}
+function resetGuide(){
+document.getElementById("guide").classList.add("hidden");
+}
+document.getElementById("language").onchange=e=>{
+if(e.target.value==="en"){
+alert("English translation is coming in a later version.");
+e.target.value="sv";
+}
+};
+</script>
+</body>
+</html>
