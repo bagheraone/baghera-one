@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: baghera-one
+    runtime: docker
+    region: frankfurt
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    autoDeployTrigger: "off"
+    healthCheckPath: /
+    numInstances: 1
+
+    disk:
+      name: baghera-data
+      mountPath: /app/data
+      sizeGB: 1
+
+    envVars:
+      - key: DATABASE_PATH
+        value: /app/data/baghera.sqlite
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
