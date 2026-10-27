@@ -1,118 +1,54 @@
-
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Baghera One – Know what to do next</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#17243a}
-header{background:#122b50;color:white;padding:24px 7%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-.logo{font-size:26px;font-weight:bold}
-select,button{font:inherit;padding:12px;border-radius:9px}
-.hero{text-align:center;padding:65px 20px;background:linear-gradient(135deg,#173b70,#2875a6);color:white}
-.hero h1{font-size:clamp(30px,5vw,48px);margin:0 0 15px}
-.hero p{font-size:19px}
-main{max-width:1100px;margin:auto;padding:35px 20px}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
-.card{background:white;padding:25px;border-radius:15px;box-shadow:0 4px 18px #152b4512}
-.card h3{margin-top:0}
-button{background:#1768bd;color:white;border:0;cursor:pointer}
-button:hover{background:#104c8c}
-.guide{background:white;margin-top:30px;padding:25px;border-radius:15px}
-.option{display:block;margin:10px 0;text-align:left;width:100%}
-.hidden{display:none}
-footer{text-align:center;padding:30px;color:#65748a}
+:root{font-family:Arial,sans-serif;color:#19324a;background:#f5f7fb}*{box-sizing:border-box}body{margin:0}header{background:#122b50;color:white;padding:20px max(5%,calc((100% - 1100px)/2));display:flex;justify-content:space-between;align-items:center;gap:15px}.logo{font-weight:800;font-size:25px}select,input,textarea,button{font:inherit;border-radius:9px;padding:12px}select,input,textarea{border:1px solid #b7c6d4;background:white;width:100%}header select{width:auto}.hero{text-align:center;background:linear-gradient(135deg,#173b70,#2875a6);color:white;padding:55px 20px}.hero h1{font-size:clamp(30px,5vw,48px);margin:0 0 12px}main{max-width:1100px;margin:auto;padding:32px 20px}h2{margin-top:0}.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px}.card,.panel{background:white;padding:24px;border-radius:16px;box-shadow:0 4px 20px #142b4512}.card h3{margin-top:0}.card p{min-height:48px;color:#4b5d6e}button,.btn{background:#1768bd;color:white;border:0;cursor:pointer;text-decoration:none;display:inline-block;font-weight:600}button:hover,.btn:hover{background:#104c8c}.secondary{background:#e8eff8;color:#173b70}.secondary:hover{background:#d5e4f5}.panel{margin-top:26px}.hidden{display:none}.field{margin:18px 0}label{display:block;font-weight:600;margin-bottom:8px}textarea{min-height:95px;resize:vertical}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.plan li{margin:12px 0;line-height:1.5}.notice{background:#edf5ff;border-left:4px solid #1768bd;padding:14px;border-radius:6px;margin:16px 0}footer{text-align:center;padding:28px;color:#65748a}a{color:#155ca5}a:focus,button:focus,select:focus,textarea:focus{outline:3px solid #f0b429;outline-offset:2px}@media(max-width:600px){header{padding:18px}.logo{font-size:21px}.hero{padding:42px 15px}.panel,.card{padding:19px}}
 </style>
 </head>
 <body>
-<header>
-<div class="logo">Baghera One</div>
-<select id="language" aria-label="Välj språk">
-<option value="sv">Svenska</option>
-<option value="en">English</option>
-</select>
-</header>
-<section class="hero">
-<h1>Know what to do next.</h1>
-<p>Få hjälp att förstå dina nästa steg i Sverige.</p>
-</section>
-<main>
-<h2>Vad behöver du hjälp med?</h2>
-<div class="cards" id="cards"></div>
-<section class="guide hidden" id="guide" aria-live="polite">
-<h2 id="guideTitle"></h2>
-<div id="guideContent"></div>
-<button onclick="resetGuide()">Tillbaka</button>
-</section>
-</main>
-<footer>Baghera One · Information och vägledning, inte myndighetsbeslut.</footer>
+<header><div class="logo">Baghera One</div><select id="language" aria-label="Välj språk"><option value="sv">Svenska</option><option value="en">English (kommer senare)</option></select></header>
+<section class="hero"><h1>Know what to do next.</h1><p>Få hjälp att förstå dina nästa steg i Sverige.</p></section>
+<main><h2>Vad behöver du hjälp med?</h2><div class="cards" id="cards"></div>
+<section class="panel hidden" id="wizard" aria-live="polite"><h2 id="wizardTitle">Arbete och jobbsökande</h2><p>Besvara några frågor så skapar vi en enkel handlingsplan.</p>
+<div class="field"><label for="situation">Vilken situation stämmer bäst?</label><select id="situation"><option value="unemployed">Jag är arbetslös och söker jobb</option><option value="soon">Jag riskerar att bli arbetslös</option><option value="new">Jag är ny i Sverige och vill börja arbeta</option><option value="change">Jag arbetar men vill byta jobb</option><option value="support">Jag behöver extra stöd för att kunna arbeta</option></select></div>
+<div class="field"><label for="registered">Är du inskriven hos Arbetsförmedlingen?</label><select id="registered"><option value="unknown">Jag vet inte</option><option value="yes">Ja</option><option value="no">Nej</option></select></div>
+<div class="field"><label for="cv">Har du ett aktuellt CV?</label><select id="cv"><option value="no">Nej</option><option value="yes">Ja</option></select></div>
+<div class="field"><label for="details">Beskriv gärna din situation (frivilligt)</label><textarea id="details" maxlength="600" placeholder="Till exempel: Jag söker jobb inom lager och behöver hjälp med mitt CV."></textarea><small>Skriv inte personnummer, adress eller andra känsliga uppgifter. Texten skickas inte till någon server.</small></div>
+<div class="actions"><button id="generate">Skapa min handlingsplan</button><button class="secondary" id="closeWizard">Tillbaka</button></div></section>
+<section class="panel hidden" id="result" aria-live="polite"><h2>Din handlingsplan</h2><p id="summary"></p><ol class="plan" id="steps"></ol><div class="notice">Detta är generell vägledning, inte ett myndighetsbeslut. Kontrollera aktuella villkor hos ansvarig myndighet. Ingen information sparas automatiskt.</div><h3>Relevanta länkar</h3><ul id="resources"></ul><div class="actions"><button id="copyPlan">Kopiera planen</button><button class="secondary" id="backToQuestions">Ändra mina svar</button></div></section>
+<section class="panel hidden" id="other"><h2 id="otherTitle"></h2><p>Det här området utvecklas vidare. Under tiden kan du besöka den ansvariga myndighetens officiella webbplats.</p><p><a id="otherLink" href="#" target="_blank" rel="noopener noreferrer">Öppna informationssidan</a></p><button class="secondary" id="closeOther">Tillbaka</button></section>
+</main><footer>Baghera One · Information och vägledning, inte myndighetsbeslut.</footer>
 <script>
-const topics=[
-["Arbete och jobbsökande","Hitta nästa steg mot arbete."],
-["A-kassa och arbetslöshet","Förstå vad du behöver kontrollera."],
-["Försäkringskassan","Vägledning kring ersättning och intyg."],
-["Migration och uppehållstillstånd","Hitta relevant myndighetsinformation."],
-["Familj och vardag","Vägledning vid förändringar i livet."]
-];
-const links=[
-"https://arbetsformedlingen.se",
-"https://www.sverigesakassor.se",
-"https://www.forsakringskassan.se",
-"https://www.migrationsverket.se",
-"https://www.1177.se"
-];
-const cards=document.getElementById("cards");
-topics.forEach((topic,i)=>{
-const card=document.createElement("article");
-card.className="card";
-const h=document.createElement("h3");
-h.textContent=topic[0];
-const p=document.createElement("p");
-p.textContent=topic[1];
-const b=document.createElement("button");
-b.textContent="Starta guide";
-b.onclick=()=>startGuide(i);
-card.append(h,p,b);
-cards.append(card);
-});
-function startGuide(i){
-document.getElementById("guide").classList.remove("hidden");
-document.getElementById("guideTitle").textContent=topics[i][0];
-const content=document.getElementById("guideContent");
-content.replaceChildren();
-const p=document.createElement("p");
-p.textContent="Vad vill du börja med?";
-content.append(p);
-["Jag vill förstå mina alternativ","Jag behöver kontakta rätt myndighet"].forEach(choice=>{
-const b=document.createElement("button");
-b.className="option";
-b.textContent=choice;
-b.onclick=()=>{
-content.replaceChildren();
-const info=document.createElement("p");
-info.textContent="Börja med att beskriva din situation och kontrollera vilka regler som gäller för dig hos ansvarig myndighet.";
-const a=document.createElement("a");
-a.href=links[i];
-a.target="_blank";
-a.rel="noopener noreferrer";
-a.textContent="Öppna relevant informationssida";
-content.append(info,a);
+const topics=[['Arbete och jobbsökande','Hitta nästa steg mot arbete.','https://arbetsformedlingen.se/'],['A-kassa och arbetslöshet','Förstå vad du behöver kontrollera.','https://www.sverigesakassor.se/'],['Försäkringskassan','Vägledning kring ersättning och intyg.','https://www.forsakringskassan.se/'],['Migration och uppehållstillstånd','Hitta relevant myndighetsinformation.','https://www.migrationsverket.se/'],['Familj och vardag','Vägledning vid förändringar i livet.','https://www.1177.se/']];
+const $=id=>document.getElementById(id);
+function hidePanels(){['wizard','result','other'].forEach(id=>$(id).classList.add('hidden'))}
+function showPanel(id){hidePanels();$(id).classList.remove('hidden');$(id).scrollIntoView({behavior:'smooth',block:'start'})}
+topics.forEach((topic,i)=>{const c=document.createElement('article');c.className='card';const h=document.createElement('h3');h.textContent=topic[0];const p=document.createElement('p');p.textContent=topic[1];const b=document.createElement('button');b.textContent='Starta guide';b.onclick=()=>{if(i===0){showPanel('wizard')}else{$('otherTitle').textContent=topic[0];$('otherLink').href=topic[2];showPanel('other')}};c.append(h,p,b);$('cards').append(c)});
+$('closeWizard').onclick=()=>hidePanels();$('closeOther').onclick=()=>hidePanels();$('backToQuestions').onclick=()=>showPanel('wizard');
+$('language').onchange=e=>{if(e.target.value==='en'){alert('Engelsk översättning kommer i en senare version.');e.target.value='sv'}};
+let lastPlan='';
+$('generate').onclick=()=>{
+const situation=$('situation').value,registered=$('registered').value,cv=$('cv').value;
+const steps=[];
+if(situation==='soon')steps.push('Ta reda på när anställningen upphör och vilka handlingar du behöver från arbetsgivaren. Kontakta din a-kassa för att kontrollera villkoren.');
+if(situation==='new')steps.push('Undersök vilka dokument och eventuella tillstånd som behövs för att arbeta i Sverige. Be Arbetsförmedlingen om vägledning kring vägen till arbete.');
+if(situation==='change')steps.push('Fundera över vilka yrken och arbetsuppgifter du vill söka och kartlägg dina erfarenheter.');
+if(situation==='support')steps.push('Beskriv vilka arbetsuppgifter som fungerar för dig och vilket stöd eller vilka anpassningar du behöver. Fråga Arbetsförmedlingen om möjliga stödinsatser.');
+if(situation==='unemployed')steps.push('Gör en lista över yrken du kan söka och vilka krav arbetsgivarna brukar ställa.');
+if(registered==='no')steps.push('Kontrollera om du behöver skriva in dig hos Arbetsförmedlingen och när du ska göra det.');
+else if(registered==='unknown')steps.push('Kontrollera om du är inskriven hos Arbetsförmedlingen och vad som gäller för just din situation.');
+else steps.push('Gå igenom din planering med Arbetsförmedlingen och kontrollera vilka aktiviteter du förväntas genomföra.');
+if(cv==='no')steps.push('Skriv ett enkelt CV med kontaktuppgifter, erfarenheter, utbildning och kompetenser.');else steps.push('Anpassa ditt CV efter de jobb du vill söka.');
+steps.push('Sök relevanta jobb i Platsbanken och via arbetsgivarnas egna webbplatser.');
+steps.push('Kontrollera om du behöver aktivitetsrapportera och om du kan ha rätt till ersättning. Regler och tidsfrister beror på din situation.');
+const detail=$('details').value.trim();$('summary').textContent='Förslag utifrån dina svar'+(detail?' och din beskrivning (som inte analyseras automatiskt i denna version)':'')+'.';
+$('steps').replaceChildren();steps.forEach(s=>{const li=document.createElement('li');li.textContent=s;$('steps').append(li)});
+const links=[['Arbetsförmedlingen','https://arbetsformedlingen.se/'],['Platsbanken','https://arbetsformedlingen.se/platsbanken/'],['Sveriges a-kassor','https://www.sverigesakassor.se/']];$('resources').replaceChildren();links.forEach(([name,url])=>{const li=document.createElement('li'),a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=name;li.append(a);$('resources').append(li)});
+lastPlan='Baghera One – Min handlingsplan\n\n'+steps.map((s,i)=>(i+1)+'. '+s).join('\n')+'\n\nKontrollera aktuella regler hos ansvarig myndighet.';
+showPanel('result');
 };
-content.append(b);
-});
-document.getElementById("guide").scrollIntoView({behavior:"smooth"});
-}
-function resetGuide(){
-document.getElementById("guide").classList.add("hidden");
-}
-document.getElementById("language").onchange=e=>{
-if(e.target.value==="en"){
-alert("English translation is coming in a later version.");
-e.target.value="sv";
-}
-};
+$('copyPlan').onclick=async()=>{try{await navigator.clipboard.writeText(lastPlan);$('copyPlan').textContent='Kopierad!'}catch{window.prompt('Kopiera planen:',lastPlan)}};
 </script>
-</body>
-</html>
+</body></html>
