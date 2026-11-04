@@ -104,12 +104,18 @@ $('benefitMonth').value=maxMonth;
 let benefitMemory={};
 function validBenefitMonth(value){return /^\d{4}-(0[1-9]|1[0-2])$/.test(value)&&value>='2000-01'&&value<=maxMonth}
 function benefitKey(){return 'baghera-benefit-'+$('benefitMonth').value}
+function formatBenefitMonth(date){
+ if(currentLang==='so'){
+  const months=['Janaayo','Febraayo','Maarso','Abriil','Maajo','Juun','Luulyo','Agoosto','Sebtembar','Oktoobar','Nofeembar','Diseembar'];
+  return months[date.getUTCMonth()]+' '+date.getUTCFullYear();
+ }
+ const locale={sv:'sv-SE',en:'en-GB',fa:'fa-IR-u-ca-gregory',ar:'ar-u-ca-gregory'}[currentLang];
+ return new Intl.DateTimeFormat(locale,{month:'long',year:'numeric',timeZone:'UTC'}).format(date);
+}
 function monthPair(value){
  if(!validBenefitMonth(value))return '';
  const [year,month]=value.split('-').map(Number);
- const locale={sv:'sv-SE',en:'en-GB',fa:'fa-IR-u-ca-gregory',ar:'ar-u-ca-gregory',so:'so-SO'}[currentLang];
- const format=new Intl.DateTimeFormat(locale,{month:'long',year:'numeric',timeZone:'UTC'});
- return tr('Deltagande: ')+format.format(new Date(Date.UTC(year,month-1,1)))+' · '+tr('Ansökningsmånad: ')+format.format(new Date(Date.UTC(year,month,1)));
+ return tr('Deltagande: ')+formatBenefitMonth(new Date(Date.UTC(year,month-1,1)))+' · '+tr('Ansökningsmånad: ')+formatBenefitMonth(new Date(Date.UTC(year,month,1)));
 }
 function refreshBenefit(){
  const valid=validBenefitMonth($('benefitMonth').value);
@@ -180,7 +186,7 @@ loadBenefit();
 let benefitStep=0;
 function flowMonthLabel(){
  const [year,month]=$('flowMonth').value.split('-').map(Number);
- return new Intl.DateTimeFormat(currentLang==='sv'?'sv-SE':currentLang==='fa'?'fa-IR-u-ca-gregory':currentLang==='ar'?'ar-u-ca-gregory':currentLang==='so'?'so-SO':'en-GB',{year:'numeric',month:'long',timeZone:'UTC'}).format(new Date(Date.UTC(year,month-1,1)));
+ return formatBenefitMonth(new Date(Date.UTC(year,month-1,1)));
 }
 function refreshBenefitFlow(){
  if(!$('benefitFlow'))return;
