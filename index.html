@@ -459,4 +459,10 @@ $('downloadSavedPlan').onclick=()=>{if(openedSavedPlan)downloadPlanText(openedSa
 $('closeSavedPlan').onclick=()=>{openedSavedPlan=null;$('savedPlanView').classList.add('hidden');$('savedPlansDetails').querySelector('summary').focus()};
 window.addEventListener('storage',event=>{if(event.key===savedPlansKey){openedSavedPlan=null;$('savedPlanView').classList.add('hidden');renderSavedPlans()}});
 renderSavedPlans();
+
+function openLinkedGuide(){
+ if(window.location.hash==='#jobbsokande')startGuide(0);
+}
+window.addEventListener('hashchange',openLinkedGuide);
+openLinkedGuide();
 </script></body></html>
