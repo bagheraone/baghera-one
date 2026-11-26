@@ -15,11 +15,11 @@ const el=(tag,parent,txt)=>{const n=document.createElement(tag);if(txt!==undefin
 const labels=[];
 function label(n,i){labels.push([n,i]);n.textContent=w(i);return n}
 function btn(parent,i,fn){const b=label(el('button',parent),i);b.type='button';b.addEventListener('click',fn);return b}
-const toggle=btn(document.querySelector('header'),0,()=>{panel.hidden=!panel.hidden;if(!panel.hidden){heading.focus();if(user&&!recovery)refresh()}});
+const toggle=btn(document.querySelector('header'),0,()=>{panel.hidden=!panel.hidden;toggle.setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden){heading.focus();if(user&&!recovery)refresh()}});
 toggle.className='secondary';
-const panel=el('section');panel.className='panel';panel.id='accountBeta';panel.hidden=true;panel.style.cssText='max-width:1060px;margin:18px auto;padding:24px';document.querySelector('header').after(panel);
+toggle.setAttribute('aria-controls','accountBeta');const panel=el('section');panel.className='panel';panel.id='accountBeta';panel.hidden=true;panel.style.cssText='max-width:1060px;margin:18px auto;padding:24px';document.querySelector('header').after(panel);
 const heading=label(el('h2',panel),0);heading.tabIndex=-1;
-btn(panel,20,()=>{panel.hidden=true;toggle.focus()}).className='secondary';
+btn(panel,20,()=>{panel.hidden=true;toggle.setAttribute('aria-expanded','false');toggle.focus()}).className='secondary';
 label(el('p',panel),19);
 const msg=el('p',panel);msg.setAttribute('role','status');
 const form=el('form',panel);
@@ -27,7 +27,7 @@ const emailLabel=el('label',form);label(el('span',emailLabel),5);const email=el(
 const passLabel=el('label',form);label(el('span',passLabel),6);const pass=el('input',passLabel);pass.type='password';pass.autocomplete='current-password';pass.required=true;
 for(const input of [email,pass])input.style.cssText='display:block;width:100%;max-width:440px;padding:12px;border:1px solid #879f90;border-radius:9px;margin:8px 0 16px;font:inherit';
 const controls=el('div',form);controls.className='actions';
-const login=btn(controls,1,()=>auth('login'));login.type='submit';form.onsubmit=e=>{e.preventDefault();auth('login')};
+const login=btn(controls,1,()=>{});login.type='submit';form.onsubmit=e=>{e.preventDefault();auth(recovery?'change':'login')};
 const signup=btn(controls,2,()=>auth('signup'));
 const forgot=btn(controls,3,()=>auth('reset'));forgot.className='secondary';
 const change=btn(controls,16,()=>auth('change'));
@@ -40,15 +40,15 @@ cloud.className='secondary';const cloudStatus=el('p',$('savePlan').parentElement
 const endpoint='https://owuhvthdmqhucwingexh.supabase.co';
 const key='sb_publishable_lhyMo7AZzT2AiFGoJGUYIA_Y8rjF1_l';
 let client,user=null,recovery=false,busy=false,epoch=0;
-const redirect='https://baghera-one.onrender.com/';
+const redirect=window.location.origin+'/';
 const say=(i,target=msg)=>{target.textContent=w(i)};
-function state(){form.hidden=!!user&&!recovery;account.hidden=!user||recovery;emailLabel.hidden=recovery;email.required=!recovery;login.hidden=recovery;signup.hidden=recovery;forgot.hidden=recovery;change.hidden=!recovery;pass.autocomplete=recovery?'new-password':'current-password';identity.textContent=user?.email||'';if(!user||recovery){list.replaceChildren();cloudStatus.textContent=''} }
+function state(){toggle.setAttribute('aria-expanded',String(!panel.hidden));form.hidden=!!user&&!recovery;account.hidden=!user||recovery;emailLabel.hidden=recovery;email.required=!recovery;login.hidden=recovery;signup.hidden=recovery;forgot.hidden=recovery;change.hidden=!recovery;pass.autocomplete=recovery?'new-password':'current-password';identity.textContent=user?.email||'';if(!user||recovery){list.replaceChildren();cloudStatus.textContent=''} }
 function accept(session){const next=session?.user||null;if(user?.id!==next?.id){epoch++;list.replaceChildren();cloudStatus.textContent='';pass.value=''}user=next;state()}
 async function auth(mode){if(!client||busy)return; if(mode==='reset'&&!email.reportValidity())return;if(['login','signup'].includes(mode)&&(!email.reportValidity()||!pass.reportValidity()))return;if(['signup','change'].includes(mode)&&pass.value.length<12){say(13);pass.focus();return}busy=true;msg.textContent='';try{let response;switch(mode){case 'login':response=await client.auth.signInWithPassword({email:email.value.trim(),password:pass.value});break;case 'signup':response=await client.auth.signUp({email:email.value.trim(),password:pass.value,options:{emailRedirectTo:redirect}});break;case 'reset':response=await client.auth.resetPasswordForEmail(email.value.trim(),{redirectTo:redirect});break;case 'change':response=await client.auth.updateUser({password:pass.value});break;case 'logout':response=await client.auth.signOut();break}if(response.error)throw response.error;pass.value='';if(mode==='logout'){recovery=false;accept(null);email.value='';msg.textContent=''}else if(mode==='change'){recovery=false;state();say(17);refresh()}else if(mode==='reset'||mode==='signup'&&!response.data.session){say(12)}else{accept(response.data.session);refresh()}}catch{say(13)}finally{busy=false}}
 async function refresh(){if(!client||!user||recovery)return;const owner=user.id,version=++epoch;list.replaceChildren();try{const {data,error}=await client.from('action_plans').select('id,title,content,created_at').eq('user_id',owner).order('created_at',{ascending:false}).limit(100);if(error)throw error;if(version!==epoch||user?.id!==owner||recovery)return;if(!data.length)el('p',list,w(15));for(const plan of data){const details=el('details',list);details.style.margin='12px 0';el('summary',details,plan.title);const pre=el('pre',details,typeof plan.content?.text==='string'?plan.content.text:'');pre.style.cssText='white-space:pre-wrap;overflow-wrap:anywhere;font:inherit';btn(details,10,async()=>{if(user?.id!==owner||!confirm(w(11)))return;try{const result=await client.from('action_plans').delete().eq('id',plan.id).eq('user_id',owner);if(result.error)throw result.error;if(user?.id===owner)refresh()}catch{if(user?.id===owner)say(13)}})}}catch{if(version===epoch&&user?.id===owner)say(13)}}
 let saving=false;
-async function save(){if(!client||!user||recovery){panel.hidden=false;say(18);panel.scrollIntoView({block:'start'});return}if(saving||typeof lastPlan!=='string'||!lastPlan)return;const owner=user.id;saving=true;cloud.disabled=true;cloudStatus.textContent='';try{const {error}=await client.from('action_plans').insert({user_id:owner,title:$('summary').textContent,language:language.value,content:{text:lastPlan,steps:lastPlanSteps}});if(error)throw error;if(user?.id===owner){say(14,cloudStatus);if(!panel.hidden)refresh()}}catch{if(user?.id===owner)say(13,cloudStatus)}finally{saving=false;cloud.disabled=false}}
-language.addEventListener('change',()=>{for(const [n,i] of labels)if(n.isConnected)n.textContent=w(i);msg.textContent='';cloudStatus.textContent='';if(user&&!panel.hidden)refresh()});
+async function save(){if(!client||!user||recovery){panel.hidden=false;toggle.setAttribute('aria-expanded','true');say(18);panel.scrollIntoView({block:'start'});return}if(saving||typeof lastPlan!=='string'||!lastPlan)return;const owner=user.id;saving=true;cloud.disabled=true;cloudStatus.textContent='';try{const {error}=await client.from('action_plans').insert({user_id:owner,title:$('summary').textContent,language:language.value,content:{text:lastPlan,steps:lastPlanSteps}});if(error)throw error;if(user?.id===owner){say(14,cloudStatus);if(!panel.hidden)refresh()}}catch{if(user?.id===owner)say(13,cloudStatus)}finally{saving=false;cloud.disabled=false}}
+language.addEventListener('change',()=>{for(let j=labels.length-1;j>=0;j--){const [n,i]=labels[j];if(n.isConnected)n.textContent=w(i);else labels.splice(j,1);}msg.textContent='';cloudStatus.textContent='';if(user&&!panel.hidden)refresh()});
 state();
 try{if(!window.supabase?.createClient)throw Error('Unavailable');client=window.supabase.createClient(endpoint,key);client.auth.onAuthStateChange((event,session)=>{if(event==='PASSWORD_RECOVERY'){recovery=true;panel.hidden=false}if(event==='SIGNED_OUT')recovery=false;accept(session);if(user&&!recovery&&!panel.hidden)setTimeout(refresh,0)}); }catch{say(13);form.hidden=true;cloud.disabled=true}
 })();
